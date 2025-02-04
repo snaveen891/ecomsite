@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-8)vtxsjpr+ptjm^5i$+(_o%93mugmm$)s(6k=k^sv!o((1ya*g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ecomsite.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['2fca-106-51-219-37.ngrok-free.app', 'ecomsite.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -40,6 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'store.apps.StoreConfig',
+    'cart.apps.CartConfig',
+    'orders.apps.OrdersConfig',
+    'django.contrib.postgres',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cart.context_processors.cart',
             ],
         },
     },
@@ -138,7 +143,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # For Accounts methods
-LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_REDIRECT_URL = 'store:product_list'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 
@@ -179,3 +184,18 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('GOOGLE_OAUTH2_SECRET')
 
 
+# Cart settings
+CART_SESSION_ID = 'cart'
+
+
+
+# Celery settings
+RMQ_USER = config('RMQ_USER')
+RMQ_PASS = config('RMQ_PASS')
+CELERY_BROKER_URL = 'amqps://faaorhwt:NgvQSphN8gDWyRGjGEjRaT0Ktz9AUFO4@shark.rmq.cloudamqp.com/faaorhwt'
+
+
+# Razorpay settings
+RAZORPAY_API_KEY = config('RAZORPAY_API_KEY')
+RAZORPAY_API_SECRET = config('RAZORPAY_API_SECRET')
+RAZORPAY_WEBHOOK_SECRET = config('RAZORPAY_WEBHOOK_SECRET')

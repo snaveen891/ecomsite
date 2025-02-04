@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>profile</h1>
+<p>
+    <img src="{% if user.profile.photo %}{{ user.profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}"><br>
+    <strong>First name:</strong> {{ user.first_name }} <br>
+    <strong>Last name:</strong> {{ user.last_name }} <br>
+    <strong>Email:</strong> {{ user.email }} <br>
+    <a href="{% url "edit" %}">Edit profile</a><br>
+    <a href="{% url "password_change" %}">Change password</a><br>
+    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+</p>
+{% endblock %}

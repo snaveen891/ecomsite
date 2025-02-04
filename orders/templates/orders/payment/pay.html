@@ -1,0 +1,88 @@
+{% extends "store/base.html" %}
+
+{% block title %}
+Checkout
+{% endblock %}
+
+{% block content %}
+<!-- Razorpay Checkout Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<!-- Page Title -->
+<h2>Complete Your Payment</h2>
+
+<!-- Payment Button -->
+<button id="rzp-button" class="btn btn-primary">Pay Now</button>
+
+<!-- Loader to show while payment is processing -->
+<div id="payment-loader" style="display: none;">
+    <p>Processing payment...</p>
+</div>
+
+<script>
+    // Configure Razorpay Options
+    var options = {
+        key: "{{ razorpay_api_key }}",
+        amount: "{{ order_amount }}",
+        currency: "INR",
+        order_id: "{{ razorpay_order_id }}",
+        handler: function (response) {
+            console.log(response);
+
+            // Show loader during payment verification
+            document.getElementById('payment-loader').style.display = 'block';
+            document.getElementById('rzp-button').disabled = true;
+
+            // Send payment details to the backend for verification
+            fetch('/orders/payment/fverify/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(response)
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Hide loader after response
+                document.getElementById('payment-loader').style.display = 'none';
+                document.getElementById('rzp-button').disabled = false;
+
+                // Handle response from backend
+                if (data.status === "success") {
+                    alert("Payment Successful!");
+                    // Optionally redirect to success page
+                    window.location.href = '/orders/payment/done/';
+                } else {
+                    alert("Payment Failed! Please try again.");
+                }
+            })
+            .catch(error => {
+                // Hide loader if there was an error
+                document.getElementById('payment-loader').style.display = 'none';
+                document.getElementById('rzp-button').disabled = false;
+                alert("Error verifying payment! Please try again.");
+            });
+        },
+        prefill: {
+            name: "{{ order.first_name }} {{ order.last_name }}",
+            email: "{{ order.email }}"
+        },
+        notes: {
+            order_id: "{{ razorpay_order_id }}"
+        },
+        theme: {
+            color: "#F37254"  // Customize the button color
+        }
+    };
+
+    // Initialize Razorpay Checkout
+    var rzp = new Razorpay(options);
+
+    // Open Razorpay Checkout on button click
+    document.getElementById('rzp-button').onclick = function(e) {
+        rzp.open();
+        e.preventDefault();
+    };
+</script>
+
+{% endblock %}

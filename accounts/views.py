@@ -7,8 +7,8 @@ from .models import Profile
 from django.contrib import messages
 
 @login_required
-def dashboard(request):
-    return render(request, 'accounts/dashboard.html', {'section': 'dashboard'})
+def profile(request):
+    return render(request, 'accounts/profile.html')
 
 def register(request):
     if request.method == 'POST':
