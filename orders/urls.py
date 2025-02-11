@@ -10,5 +10,6 @@ urlpatterns = [
     path('payment/<int:order_id>/', views.payment, name='payment'),
     path('payment/fverify/', views.frontend_verify, name='fverify'),
     path('payment/verify', views.webhook_verify, name='bverify'),
-    path('payment/done/', views.payment_done, name='payment_done'),
+    path('order_created/<int:order_id>/', views.order_created, name='order_created'),
+    path('cancel/<int:order_id>/', views.cancel_order, name='cancel_order'),
 ]

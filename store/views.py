@@ -2,24 +2,21 @@ from django.shortcuts import get_object_or_404, render,redirect
 from .models import Category, Product
 from cart.forms import CartAddProductForm
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.cache import cache
+
 
 def product_list(request, category_slug=None):
     category = None
     categories = Category.objects.all()
-    products = Product.objects.filter(available=True)
+    products = cache.get('all_products')
+    if not products:
+        products = Product.objects.filter(available=True)
+        cache.set('all_products', products)
     search_form = SearchForm()
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(category=category)
     
-    paginator = Paginator(products, 5)
-    page = request.GET.get('page')
-    try:
-        products = paginator.page(page)
-    except PageNotAnInteger:
-        products = paginator.page(1)
-    except EmptyPage:
-        products = paginator.page(paginator.num_pages)
     
     return render(request, 'store/product/list.html', {'category': category, 'categories': categories, 'products': products, 'search_form': search_form})
 
@@ -29,7 +26,6 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 def product_detail(request, id, slug):
     product = get_object_or_404(Product, id=id, slug=slug, available=True)
-    #get its rating and recent 3 reviews
     product_rating = product.reviews.aggregate(models.Avg('rating'))['rating__avg']
     product_reviews = product.reviews.order_by('-date_added')[:3]
     cart_product_form = CartAddProductForm()
@@ -58,7 +54,10 @@ def post_review(request, id, slug):
 def product_search(request):
     category = None
     categories = Category.objects.all()
-    products = Product.objects.filter(available=True)
+    products = cache.get('all_products')
+    if not products:
+        products = Product.objects.filter(available=True)
+        cache.set('all_products', products)
     
     if 'query' in request.GET:
         search_form = SearchForm(request.GET)

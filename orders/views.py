@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from cart.cart import Cart
 import razorpay
-from .forms import OrderCreationForm
+from .forms import OrderCreationForm, OrderCancellationForm
 from .models import OrderItem, Order
 from django.shortcuts import get_object_or_404
 
@@ -46,12 +46,13 @@ import json
 def frontend_verify(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        print(data)
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'failed'})
+        order = Order.objects.get(razorpay_order_id=data['razorpay_order_id'])
+        if order:
+            return JsonResponse({'status': 'success'})
+        return JsonResponse({'status': 'failed'})
 
-def payment_done(request):
-    return render(request, 'orders/payment/payment_done.html')
+def order_created(request, order_id):
+    render(request, 'orders/order/order_created.html', {'order_id': order_id})
 
 
 import hmac
@@ -63,28 +64,22 @@ def webhook_verify(request):
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
     try:
-        payload = request.body  # ✅ Get raw request body
-        received_signature = request.headers.get("X-Razorpay-Signature")  # ✅ Get signature
-        # ✅ Compute the correct HMAC SHA256 signature
+        payload = request.body
+        received_signature = request.headers.get("X-Razorpay-Signature")
         expected_signature = hmac.new(
-            settings.RAZORPAY_WEBHOOK_SECRET.encode(),  # ✅ Use Razorpay secret key
-            payload,  # ✅ Use raw payload
+            settings.RAZORPAY_WEBHOOK_SECRET.encode(),
+            payload,
             hashlib.sha256
         ).hexdigest()
-        print("🔍 Expected Signature:", expected_signature)
-        print("🔍 Received Signature:", received_signature)
-        # ✅ Compare the computed signature with the received signature
+
         if expected_signature != received_signature:
             return JsonResponse({"error": "Invalid signature"}, status=400)
 
-        # ✅ Parse JSON payload
         data = json.loads(payload)
 
-        # ✅ Extract order ID and payment ID from webhook payload
         order_id = data["payload"]["payment"]["entity"]["order_id"]
         payment_id = data["payload"]["payment"]["entity"]["id"]
 
-        # ✅ Update Order in DB
         order = Order.objects.get(razorpay_order_id=order_id)
         order.razorpay_payment_id = payment_id
         order.razorpay_signature = received_signature
@@ -114,3 +109,21 @@ def order_list(request):
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'orders/order/order_detail.html', {'order': order})
+
+
+@login_required
+def cancel_order(request, order_id):
+    if request.method == 'POST':
+        form = OrderCancellationForm(request.POST)
+        if form.is_valid():
+            order = get_object_or_404(Order, id=order_id, user=request.user)
+            cancellation = form.save(commit=False)
+            cancellation.order = order
+            cancellation.save()
+            order.status = Order.Status.CANCELLATION_REQUESTED
+            order.save()
+            return redirect('orders:order_list')
+    else:
+        form = OrderCancellationForm()
+        order = get_object_or_404(Order, id=order_id, user=request.user)
+        return render(request, 'orders/order/cancel.html', {'order': order, 'form': form})

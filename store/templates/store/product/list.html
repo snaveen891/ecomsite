@@ -1,6 +1,7 @@
 {% extends "store/base.html" %}
 {% load static %}
 {% block title %}
+{% load cache %}
 {% if category %}{{ category.name }}{% else %}Products{% endif %}
 {% endblock %}
 {% block content %}
@@ -22,8 +23,9 @@
     </ul>
 </div>
 <div id="main" class="product-list">
+    {% cache 600 products_list category.name|default:"all" %}
     <h1>{% if category %}{{ category.name }}{% else %}Products{% endif %}</h1>
-    {% for product in products.object_list %}
+    {% for product in products %}
     <div class="item">
         <a href="{{ product.get_absolute_url }}">
             <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
@@ -33,20 +35,6 @@
         ${{ product.price }}
     </div>
     {% endfor %}
-    <div class="pagination"></div>
-        <span class="step-links">
-            {% if products.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ products.previous_page_number }}">previous</a>
-            {% endif %}
-            <span class="current">
-                Page {{ products.number }} of {{ products.paginator.num_pages }}.
-            </span>
-            {% if products.has_next %}
-                <a href="?page={{ products.next_page_number }}">next</a>
-                <a href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
-        </span>
+    {% endcache %}
     </div>
-</div>
 {% endblock %}

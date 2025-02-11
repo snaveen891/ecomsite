@@ -4,7 +4,7 @@ Thank you
 {% endblock %}
 {% block content %}
 <h1>Thank you</h1>
-<p>Your order has been successfully completed. Your order number is
-    <strong>{{ order.id }}</strong>.
+<p>Payment successful, your order has been successfully placed. Your order number is
+    <a href={% url "orders:order_detail" order.id %}><strong>{{ order.id }}</strong></a>.
 </p>
 {% endblock %}

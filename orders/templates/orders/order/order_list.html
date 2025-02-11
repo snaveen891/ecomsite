@@ -1,6 +1,6 @@
 {% extends "store/base.html" %}
 {% block title %}
-Thank you
+past orders
 {% endblock %}
 {% block content %}
     <h1>Past Orders</h1>
@@ -10,7 +10,7 @@ Thank you
                 <strong>Order ID:</strong> <a href={% url "orders:order_detail" order.id %}>{{ order.id }}</a> <br>
                 <strong>Date:</strong> {{ order.created }}
                 <strong>Total:</strong> ${{ order.get_total_cost }}
-                <strong>Status:</strong> {{ order.status }}
+                <strong>Status:</strong> {{ order.get_status_display }}
             </li>
         {% empty %}
             <li>No past orders found.</li>

@@ -17,4 +17,7 @@ Thank you
         {% endfor %}
     </ul>
     <h2>Order total: ${{ order.get_total_cost }}</h2>
+    {% if order.status != 'D' and order.status != 'C' %}
+    <a href="{% url 'orders:cancel_order' order.id %}">Cancel Order</a>
+    {% endif %}
 {% endblock %}

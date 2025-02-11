@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
     'django.contrib.postgres',
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.RateLimitMiddleware',
 ]
 
 ROOT_URLCONF = 'ecomsite.urls'
@@ -199,3 +201,10 @@ CELERY_BROKER_URL = 'amqps://faaorhwt:NgvQSphN8gDWyRGjGEjRaT0Ktz9AUFO4@shark.rmq
 RAZORPAY_API_KEY = config('RAZORPAY_API_KEY')
 RAZORPAY_API_SECRET = config('RAZORPAY_API_SECRET')
 RAZORPAY_WEBHOOK_SECRET = config('RAZORPAY_WEBHOOK_SECRET')
+
+# Cache settings
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}

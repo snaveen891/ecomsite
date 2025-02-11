@@ -295,3 +295,27 @@ ul.errorlist {
 
 
 
+.messages {
+    list-style: none;
+}
+
+.messages li {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.messages li.error {
+    background: #ffcccc;
+    border: 1px solid #ff0000;
+}
+
+.messages li.success {
+    background: #ccffcc;
+    border: 1px solid #00ff00;
+}
+
+.messages li.info {
+    background: #ccccff;
+    border: 1px solid #0000ff;
+}

@@ -16,12 +16,14 @@ class Order(models.Model):
     razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
     razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
     razorpay_signature = models.CharField(max_length=100, blank=True, null=True)
-    class status(models.TextChoices):
-        PENDING = "P", "Pending"
+    refunded = models.BooleanField(default=False)
+    class Status(models.TextChoices):
+        PROCESSING = "P", "Processing"
         SHIPPED = "S", "Shipped"
         DELIVERED = "D", "Delivered"
+        CANCELLATION_REQUESTED = "CR", "Cancellation Requested"
         CANCELLED = "C", "Cancelled"
-    status = models.CharField(max_length=1, choices=status.choices, default=status.PENDING)
+    status = models.CharField(max_length=2, choices=Status.choices, default=Status.PROCESSING)
     class Meta:
         ordering = ('-created',)
         indexes = [
@@ -42,3 +44,22 @@ class OrderItem(models.Model):
         return str(F"OrderItem {self.id} {self.product} x {self.quantity}")
     def get_cost(self):
         return self.price * self.quantity
+    
+
+class CancellationRequest(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='cancellations')
+    reason = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    class status(models.TextChoices):
+        PENDING = "P", "Pending"
+        APPROVED = "A", "Approved"
+        REJECTED = "R", "Rejected"
+    status = models.CharField(max_length=1, choices=status.choices, default=status.PENDING)
+    class Meta:
+        ordering = ('-created',)
+        indexes = [
+            models.Index(fields=['created', 'updated']),
+        ]
+    def __str__(self):
+        return f'Order {self.order.id} Cancellation'
