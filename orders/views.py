@@ -12,7 +12,7 @@ import json
 import hmac
 import hashlib
 
-from .tasks import order_confirmation
+from .tasks import order_confirmation_email, stock_update
 
 client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET))
 
@@ -46,7 +46,7 @@ def payment(request, order_id):
     return render(request, 'orders/payment/pay.html', order_context)
 
 @csrf_exempt
-def frontend_verify(request):
+def frontend_verify(request, order_id):
     if request.method == "POST":
         data = json.loads(request.body)
         print(data)
@@ -97,7 +97,8 @@ def webhook_verify(request):
         order.status = Order.Status.PROCESSING
         order.paid = True
         order.save()
-        order_confirmation.delay(order.id)
+        order_confirmation_email.delay(order.id)
+        stock_update.delay(order.id)
         return JsonResponse({"status": "success", "message": "Order updated"}, status=200)
 
     except Order.DoesNotExist:

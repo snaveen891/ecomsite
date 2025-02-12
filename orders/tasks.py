@@ -2,7 +2,7 @@ from celery import shared_task
 from django.core.mail import send_mail
 from.models import Order
 @shared_task
-def order_confirmation(order_id):
+def order_confirmation_email(order_id):
     try:
         order = Order.objects.get(id=order_id)
         subject = f'Order nr. {order.id}'
@@ -26,3 +26,13 @@ def order_confirmation(order_id):
         return mail_sent
     except Order.DoesNotExist:
         return False
+
+
+@shared_task
+def stock_update(order_id):
+    order = Order.objects.get(id=order_id)
+    for item in order.items.all():
+        product = item.product
+        product.stock -= item.quantity
+        product.save()
+    return True

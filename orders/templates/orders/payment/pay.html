@@ -30,7 +30,7 @@ Checkout
             document.getElementById('payment-loader').style.display = 'block';
             document.getElementById('rzp-button').disabled = true;
 
-            fetch('/orders/payment/fverify/', {
+            fetch('/orders/payment/fverify/{{ order.id }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
