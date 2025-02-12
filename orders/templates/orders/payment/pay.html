@@ -7,10 +7,17 @@ Checkout
 {% block content %}
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-<h2>Complete Your Payment</h2>
-<button id="rzp-button" class="btn btn-primary">Pay Now</button>
-<div id="payment-loader" style="display: none;">
-    <p>Processing payment...</p>
+<div class="container mt-5"></div>
+    <h2 class="text-center">Complete Your Payment</h2>
+    <div class="text-center">
+        <button id="rzp-button" class="btn btn-primary mt-3">Pay Now</button>
+    </div>
+    <div id="payment-loader" class="text-center mt-3" style="display: none;">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Processing payment...</span>
+        </div>
+        <p>Processing payment...</p>
+    </div>
 </div>
 
 <script>
@@ -36,10 +43,9 @@ Checkout
                 document.getElementById('rzp-button').disabled = false;
 
                 if (data.status === "success") {
-                    alert("Payment Successful!");
-                    window.location.href = '/orders/order_created/{{ order.id }}/';
+                    window.location.href = '/orders/order_completed/{{ order.id }}/';
                 } else {
-                    alert("Payment Failed! Please try again.");
+                    window.location.href = '/orders/order_failed/{{ order.id }}/';
                 }
             })
             .catch(error => {
@@ -59,7 +65,6 @@ Checkout
             color: "#F37254"
         }
     };
-
 
     var rzp = new Razorpay(options);
 

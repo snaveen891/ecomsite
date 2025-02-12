@@ -1,18 +1,24 @@
-{% extends "base.html" %}
+{% extends "store/base.html" %}
 {% load static %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-<h1>profile</h1>
-<p>
-    <img src="{% if user.profile.photo %}{{ user.profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}"><br>
-    <strong>First name:</strong> {{ user.first_name }} <br>
-    <strong>Last name:</strong> {{ user.last_name }} <br>
-    <strong>Email:</strong> {{ user.email }} <br>
-    <a href="{% url "edit" %}">Edit profile</a><br>
-    <a href="{% url "password_change" %}">Change password</a><br>
-    <form action="{% url 'logout' %}" method="post" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
-</p>
+<div id="profile-container" class="container mt-5">
+    <h1 class="mb-4">Profile</h1>
+    <div id="profile-details" class="card p-4">
+        <div class="text-center mb-4">
+            <img id="profile-photo" class="rounded-circle" src="{% if user.profile.photo %}{{ user.profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}" alt="Profile Photo" width="150" height="150">
+        </div>
+        <p><strong>First name:</strong> <span id="profile-first-name">{{ user.first_name }}</span></p>
+        <p><strong>Last name:</strong> <span id="profile-last-name">{{ user.last_name }}</span></p>
+        <p><strong>Email:</strong> <span id="profile-email">{{ user.email }}</span></p>
+        <div id="profile-actions" class="mt-4">
+            <a id="edit-profile-link" class="btn btn-primary mr-2" href="{% url "edit" %}">Edit Profile</a>
+            <a id="change-password-link" class="btn btn-secondary mr-2" href="{% url "password_change" %}">Change Password</a>
+            <form id="logout-form" class="d-inline" action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button id="logout-button" class="btn btn-danger" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

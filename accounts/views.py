@@ -1,14 +1,16 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.contrib.auth import authenticate, login
-from .forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
+from django.shortcuts import render, redirect
+from .forms import UserRegistrationForm, UserEditForm, ProfileEditForm
 from django.contrib.auth.decorators import login_required
-from .models import Profile
 from django.contrib import messages
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+
 
 @login_required
 def profile(request):
     return render(request, 'accounts/profile.html')
+
 
 def register(request):
     if request.method == 'POST':
@@ -22,6 +24,7 @@ def register(request):
         user_form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'user_form': user_form})
 
+
 @login_required
 def edit(request):
     if request.method == 'POST':
@@ -33,16 +36,12 @@ def edit(request):
             messages.success(request, 'Profile updated successfully')
         else:
             messages.error(request, 'Error updating your profile')
+        return render(request, 'accounts/profile.html')
     else:
         user_form = UserEditForm(instance=request.user)
         profile_form = ProfileEditForm(instance=request.user.profile)
     return render(request, 'accounts/edit.html', {'user_form': user_form, 'profile_form': profile_form})
 
-
-from django.shortcuts import redirect
-from django.contrib.auth import views as auth_views
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import PasswordResetForm
 
 class CustomPasswordResetView(auth_views.PasswordResetView):
     form_class = PasswordResetForm
@@ -55,12 +54,6 @@ class CustomPasswordResetView(auth_views.PasswordResetView):
             return redirect('set_password')
         return super().form_valid(form)
     
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import SetPasswordForm
-from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
-
-User = get_user_model()
 
 @login_required
 def set_password(request):

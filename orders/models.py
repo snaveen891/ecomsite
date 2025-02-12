@@ -18,12 +18,14 @@ class Order(models.Model):
     razorpay_signature = models.CharField(max_length=100, blank=True, null=True)
     refunded = models.BooleanField(default=False)
     class Status(models.TextChoices):
+        PENDING = "PE", "Pending"
         PROCESSING = "P", "Processing"
         SHIPPED = "S", "Shipped"
         DELIVERED = "D", "Delivered"
         CANCELLATION_REQUESTED = "CR", "Cancellation Requested"
         CANCELLED = "C", "Cancelled"
-    status = models.CharField(max_length=2, choices=Status.choices, default=Status.PROCESSING)
+        FAILED = "F", "Failed"
+    status = models.CharField(max_length=2, choices=Status.choices, default=Status.PENDING)
     class Meta:
         ordering = ('-created',)
         indexes = [

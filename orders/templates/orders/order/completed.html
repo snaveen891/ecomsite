@@ -1,0 +1,16 @@
+{% extends "store/base.html" %}
+{% block title %}
+Thank you
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 text-center">
+            <h1 class="display-4">Thank you</h1>
+            <p class="lead">Payment successful, your order has been successfully placed. Your order number is
+                <a href={% url "orders:order_detail" order_id %}><strong>{{ order_id }}</strong></a>.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

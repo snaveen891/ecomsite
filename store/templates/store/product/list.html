@@ -5,36 +5,45 @@
 {% if category %}{{ category.name }}{% else %}Products{% endif %}
 {% endblock %}
 {% block content %}
-<form action="{% url 'store:product_search' %}" method="get">
-    {{ search_form.as_p }}
-    <input type="submit" value="Search">
-</form>
-<div id="sidebar">
-    <h3>Categories</h3>
-    <ul>
-        <li {% if not category %} class="selected" {% endif %}>
-            <a href="{% url "store:product_list" %}">All</a>
-        </li>
-        {% for c in categories %}
-        <li {% if category.slug == c.slug %} class="selected" {% endif %}>
-            <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
-        </li>
-        {% endfor %}
-    </ul>
+<div id="search" class="mb-4">
+    <h3>Search</h3>
+    <form action="{% url 'store:product_search' %}" method="get" class="form-inline">
+        {{ search_form.as_p }}
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
 </div>
-<div id="main" class="product-list">
-    {% cache 600 products_list category.name|default:"all" %}
-    <h1>{% if category %}{{ category.name }}{% else %}Products{% endif %}</h1>
-    {% for product in products %}
-    <div class="item">
-        <a href="{{ product.get_absolute_url }}">
-            <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
-        </a>
-        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
-        <br>
-        ${{ product.price }}
+<div class="row">
+    <div id="sidebar" class="col-md-3">
+        <h3>Categories</h3>
+        <ul class="list-group">
+            <li class="list-group-item {% if not category %} active {% endif %}">
+                <a href="{% url 'store:product_list' %}">All</a>
+            </li>
+            {% for c in categories %}
+            <li class="list-group-item {% if category.slug == c.slug %} active {% endif %}">
+                <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+            </li>
+            {% endfor %}
+        </ul>
     </div>
-    {% endfor %}
-    {% endcache %}
+    <div id="main" class="col-md-9 product-list">
+        {% cache 600 products_list category.name|default:"all" %}
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-4 item mb-4">
+                <div class="card">
+                    <a href="{{ product.get_absolute_url }}">
+                        <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}" class="card-img-top">
+                    </a>
+                    <div class="card-body">
+                        <a href="{{ product.get_absolute_url }}" class="card-title">{{ product.name }}</a>
+                        <p class="card-text">${{ product.price }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endcache %}
     </div>
+</div>
 {% endblock %}

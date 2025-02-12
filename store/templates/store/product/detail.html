@@ -4,41 +4,48 @@
 {{ product.name }}
 {% endblock %}
 {% block content %}
-<div class="product-detail">
-    <img src="{% if product.image %}{{ product.image.url }}{% else %}
-{% static "img/no_image.png" %}{% endif%}">
-    <h1>{{ product.name }}</h1>
-    <h2>
-        <a href="{{ product.category.get_absolute_url }}">
-            {{ product.category }}
-        </a>
-    </h2>
-    <p class="price">${{ product.price }}</p>
-    <p class="rating">Rating: {{ product_rating }}</p>
-    <form action="{% url "cart:cart_add" product.id %}" method="post">
-        {{ cart_product_form.as_p }}
-        {% csrf_token %}
-        <input type="submit" value="Add to cart">
-    </form>
-    {{ product.description|linebreaks }}
-    <div class="reviews">
-        <h3>Reviews:</h3>
-        {% for review in product_reviews %}
-            <div class="review">
-                <p><strong>{{ review.user }}</strong> ({{ review.date_added }})</p>
-                <p>{{ review.comment }}</p>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}" class="img-fluid">
+        </div>
+        <div class="col-md-6">
+            <h1>{{ product.name }}</h1>
+            <h2>
+                <a href="{{ product.category.get_absolute_url }}">
+                    {{ product.category }}
+                </a>
+            </h2>
+            <p class="price h4">${{ product.price }}</p>
+            <p class="rating">Rating: {{ product_rating }}</p>
+            <form action="{% url "cart:cart_add" product.id %}" method="post" class="mt-3">
+                {{ cart_product_form.as_p }}
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Add to cart</button>
+            </form>
+            <div class="mt-4">
+                {{ product.description|linebreaks }}
             </div>
-        {% endfor %}
+            <div class="reviews mt-5">
+                <h3>Reviews:</h3>
+                {% for review in product_reviews %}
+                    <div class="review border p-3 mb-3">
+                        <p><strong>{{ review.user }}</strong> ({{ review.date_added }})</p>
+                        <p>{{ review.comment }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if has_bought %}
+            <div class="post-review mt-5">
+                <h3>Post a Review:</h3>
+                <form action="{% url 'store:post_review' product.id product.slug %}" method="post">
+                    {% csrf_token %}
+                    {{ review_form.as_p }}
+                    <button type="submit" class="btn btn-success">Submit Review</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
     </div>
-    {% if has_bought %}
-    <div class="post-review">
-        <h3>Post a Review:</h3>
-        <form action="{% url 'store:post_review' product.id product.slug %}" method="post">
-            {% csrf_token %}
-            {{ review_form.as_p }}
-            <input type="submit" value="Submit Review">
-        </form>
-    </div>
-    {% endif %}
 </div>
 {% endblock %}

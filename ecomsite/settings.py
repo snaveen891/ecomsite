@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-8)vtxsjpr+ptjm^5i$+(_o%93mugmm$)s(6k=k^sv!o((1ya*g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['2fca-106-51-219-37.ngrok-free.app', 'ecomsite.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['moose-fun-buffalo.ngrok-free.app', 'ecomsite.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
