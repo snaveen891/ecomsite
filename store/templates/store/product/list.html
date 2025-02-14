@@ -27,7 +27,7 @@
         </ul>
     </div>
     <div id="main" class="col-md-9 product-list">
-        {% cache 600 products_list category.name|default:"all" %}
+        {% cache 600 products_list cache_key %}
         <div class="row">
             {% for product in products %}
             <div class="col-md-4 item mb-4">
@@ -37,7 +37,7 @@
                     </a>
                     <div class="card-body">
                         <a href="{{ product.get_absolute_url }}" class="card-title">{{ product.name }}</a>
-                        <p class="card-text">${{ product.price }}</p>
+                        <p class="card-text">₹{{ product.price }}</p>
                     </div>
                 </div>
             </div>

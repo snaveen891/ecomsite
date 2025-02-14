@@ -19,8 +19,11 @@ def product_list(request, category_slug=None):
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(category=category)
-    
-    return render(request, 'store/product/list.html', {'category': category, 'categories': categories, 'products': products, 'search_form': search_form})
+    if category:
+        cache_key = category.slug
+    else:
+        cache_key = 'all'
+    return render(request, 'store/product/list.html', {'category': category, 'categories': categories, 'products': products, 'search_form': search_form, 'cache_key': cache_key})
 
 def product_detail(request, id, slug):
     product = get_object_or_404(Product, id=id, slug=slug, available=True)
@@ -57,7 +60,6 @@ def product_search(request):
     if not products:
         products = Product.objects.filter(available=True)
         cache.set('all_products', products)
-    
     if 'query' in request.GET:
         search_form = SearchForm(request.GET)
         if search_form.is_valid():
@@ -66,13 +68,5 @@ def product_search(request):
             search_query = SearchQuery(query)
             products = products.annotate(search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query, rank__gte=0.3).order_by('-rank')
     
-    paginator = Paginator(products, 5)
-    page = request.GET.get('page')
-    try:
-        products = paginator.page(page)
-    except PageNotAnInteger:
-        products = paginator.page(1)
-    except EmptyPage:
-        products = paginator.page(paginator.num_pages)
-    
-    return render(request, 'store/product/list.html', {'category': category, 'categories': categories, 'products': products, 'search_form': search_form})
+    cache_key = f'search_{query}'    
+    return render(request, 'store/product/list.html', {'category': category, 'categories': categories, 'products': products, 'search_form': search_form, 'query': query, 'cache_key': cache_key})

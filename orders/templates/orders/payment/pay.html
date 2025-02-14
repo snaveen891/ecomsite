@@ -30,7 +30,7 @@ Checkout
             document.getElementById('payment-loader').style.display = 'block';
             document.getElementById('rzp-button').disabled = true;
 
-            fetch('/orders/payment/fverify/{{ order.id }}', {
+            fetch('/orders/payment/fverify/{{ order.id }}/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -52,6 +52,7 @@ Checkout
                 document.getElementById('payment-loader').style.display = 'none';
                 document.getElementById('rzp-button').disabled = false;
                 alert("Error verifying payment! Please try again.");
+                window.location.href = '/orders/order_failed/{{ order.id }}/';
             });
         },
         prefill: {

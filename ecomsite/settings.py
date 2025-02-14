@@ -194,7 +194,7 @@ CART_SESSION_ID = 'cart'
 # Celery settings
 RMQ_USER = config('RMQ_USER')
 RMQ_PASS = config('RMQ_PASS')
-CELERY_BROKER_URL = 'amqps://faaorhwt:NgvQSphN8gDWyRGjGEjRaT0Ktz9AUFO4@shark.rmq.cloudamqp.com/faaorhwt'
+CELERY_BROKER_URL = f'amqps://{RMQ_USER}:{RMQ_PASS}@shark.rmq.cloudamqp.com/{RMQ_USER}'
 
 
 # Razorpay settings

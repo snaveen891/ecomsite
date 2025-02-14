@@ -16,7 +16,7 @@
                     {{ product.category }}
                 </a>
             </h2>
-            <p class="price h4">${{ product.price }}</p>
+            <p class="price h4">₹{{ product.price }}</p>
             <p class="rating">Rating: {{ product_rating }}</p>
             <form action="{% url "cart:cart_add" product.id %}" method="post" class="mt-3">
                 {{ cart_product_form.as_p }}
